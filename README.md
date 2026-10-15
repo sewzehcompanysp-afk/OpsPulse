@@ -3,13 +3,13 @@
 **Farol operacional hora a hora para qualquer operação que tenha meta por hora.**
 Suba um CSV de produção e veja, em segundos, quais áreas estão fora da meta, como o turno deve fechar no ritmo atual e um resumo pronto para mandar no grupo da operação.
 
-[![Testes](https://github.com/sewzehcompanysp-afk/opspulse/actions/workflows/ci.yml/badge.svg)](https://github.com/sewzehcompanysp-afk/opspulse/actions/workflows/ci.yml)
+[![Testes](https://github.com/sewzehcompanysp-afk/OpsPulse/actions/workflows/ci.yml/badge.svg)](https://github.com/sewzehcompanysp-afk/OpsPulse/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-pandas%20%7C%20Streamlit-3776AB)
 ![JavaScript](https://img.shields.io/badge/JavaScript-sem%20depend%C3%AAncias-F7DF1E)
 ![SQL](https://img.shields.io/badge/SQL-SQLite-003B57)
 ![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-green)
 
-**[Abrir a demo ao vivo](https://sewzehcompanysp-afk.github.io/opspulse/)**: abre com dados de exemplo, sem login e sem instalar nada.
+**[Abrir a demo ao vivo](https://sewzehcompanysp-afk.github.io/OpsPulse/)**: abre com dados de exemplo, sem login e sem instalar nada.
 
 ![Tela do OpsPulse com quadro do turno, farol por área, gráfico hora a hora e alertas](docs/opspulse-web.png)
 
@@ -56,7 +56,7 @@ turnos        = T1 06h–14h · T2 14h–22h · T3 22h–06h
 
 ### Web
 
-Abra a [demo](https://sewzehcompanysp-afk.github.io/opspulse/) ou o arquivo `web/index.html` direto no navegador. Clique em **Carregar CSV** ou arraste o arquivo para a página.
+Abra a [demo](https://sewzehcompanysp-afk.github.io/OpsPulse/) ou o arquivo `web/index.html` direto no navegador. Clique em **Carregar CSV** ou arraste o arquivo para a página.
 
 Para alterar a página, edite `web/index.template.html` e rode `python web/build.py`. O script embute a base de exemplo e gera o `index.html` final.
 
