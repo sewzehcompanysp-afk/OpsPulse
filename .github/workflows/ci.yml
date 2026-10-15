@@ -1,0 +1,22 @@
+name: Testes
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependências
+        run: pip install -r python/requirements.txt -r python/requirements-dev.txt
+      - name: Testes do núcleo Python e da versão SQL
+        run: cd python && pytest -q
+      - name: Página web gerada está em dia com o template
+        run: |
+          python web/build.py
+          git diff --exit-code web/index.html
