@@ -13,9 +13,11 @@ Mesmas regras da versão web (web/index.template.html) e da versão SQL (sql/kpi
 from __future__ import annotations
 
 import io
+import math
 import re
 import unicodedata
 from dataclasses import dataclass
+from decimal import ROUND_HALF_UP, Decimal
 
 import pandas as pd
 
@@ -86,6 +88,9 @@ def ler_csv(origem) -> pd.DataFrame:
     cab = texto.splitlines()[0] if texto.strip() else ""
     sep = max([";", "\t", ","], key=cab.count)
     bruto = pd.read_csv(io.StringIO(texto), sep=sep, dtype=str, skipinitialspace=True)
+    # Célula vazia vira texto vazio. No pandas 3, astype(str) mantém o NaN, e uma
+    # linha sem área passaria na validação e quebraria o resumo do turno.
+    bruto = bruto.fillna("")
 
     mapa: dict[str, str] = {}
     for col in bruto.columns:
@@ -213,12 +218,23 @@ def resumir(df: pd.DataFrame, data_op: str, turno: str, limites: dict = LIMITES_
     return Resumo(data_op, turno, int(t["pos"].nunique()), areas, hh, total)
 
 
+# Arredondamento igual ao da versão web: empate (x,5) sobe. O round() e o format do
+# Python arredondam empates para o número par, e o mesmo turno mostraria 89,3% na
+# tela e 89,2% no resumo enviado ao grupo.
+def _arred(x: float, casas: int) -> str:
+    return str(Decimal(x).quantize(Decimal(1).scaleb(-casas), rounding=ROUND_HALF_UP))
+
+
 def _pct(x: float) -> str:
-    return f"{x * 100:.1f}%".replace(".", ",")
+    return f"{_arred(x * 100, 1)}%".replace(".", ",")
+
+
+def _pct0(x: float) -> str:
+    return f"{_arred(x * 100, 0)}%" if pd.notna(x) else "—"
 
 
 def _fmt(x: float) -> str:
-    return f"{round(x):,}".replace(",", ".")
+    return f"{math.floor(x + 0.5):,}".replace(",", ".")
 
 
 def alertas(res: Resumo, limites: dict = LIMITES_PADRAO) -> list[dict]:
@@ -249,12 +265,12 @@ def resumo_texto(res: Resumo, lista: list[dict]) -> str:
         linhas.append(f"Atualizado até {res.ultima_hora:02d}h59 ({res.horas_com_dado} de {HORAS_TURNO} h)")
     else:
         linhas.append(f"Turno fechado ({res.horas_com_dado} de {HORAS_TURNO} h)")
-    linhas += ["", f"{icone[t['farol']]} *Total:* {_fmt(t['realizado'])} / {_fmt(t['meta_acum'])} ({t['atingimento'] * 100:.0f}%)"]
+    linhas += ["", f"{icone[t['farol']]} *Total:* {_fmt(t['realizado'])} / {_fmt(t['meta_acum'])} ({_pct0(t['atingimento'])})"]
     if res.em_andamento:
-        linhas.append(f"Projeção de fechamento: {_fmt(t['projecao'])} de {_fmt(t['meta_turno'])} ({t['proj_pct'] * 100:.0f}%)")
+        linhas.append(f"Projeção de fechamento: {_fmt(t['projecao'])} de {_fmt(t['meta_turno'])} ({_pct0(t['proj_pct'])})")
     linhas.append("")
     for a in res.areas.to_dict("records"):
-        linhas.append(f"{icone[a['farol']]} {a['area']}: {_fmt(a['realizado'])} / {_fmt(a['meta_acum'])} ({a['atingimento'] * 100:.0f}%)")
+        linhas.append(f"{icone[a['farol']]} {a['area']}: {_fmt(a['realizado'])} / {_fmt(a['meta_acum'])} ({_pct0(a['atingimento'])})")
     if lista:
         linhas += ["", "*Pontos de atenção*"] + [f"• {x['texto']}" for x in lista[:4]]
     return "\n".join(linhas)

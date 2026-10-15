@@ -12,9 +12,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
       - name: Instalar dependências
         run: pip install -r python/requirements.txt -r python/requirements-dev.txt
-      - name: Testes do núcleo Python e da versão SQL
+      - name: Testes do núcleo Python e paridade com as versões web e SQL
         run: cd python && pytest -q
       - name: Página web gerada está em dia com o template
         run: |
