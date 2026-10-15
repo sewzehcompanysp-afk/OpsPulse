@@ -33,7 +33,7 @@ Em centros de distribuição, fábricas e operações de atendimento, o acompanh
 
 ## Três implementações, mesma regra
 
-O mesmo cálculo foi escrito em três linguagens, cada uma no lugar onde ela faz mais sentido numa empresa. Um teste automatizado confere que as versões SQL e Python chegam aos mesmos números.
+O mesmo cálculo foi escrito em três linguagens, cada uma no lugar onde ela faz mais sentido numa empresa. Testes automatizados conferem que as três chegam aos mesmos números: o núcleo JavaScript da página roda no Node com a mesma base e é comparado com o Python indicador a indicador, incluindo os alertas e o texto do resumo, e as views SQL são comparadas com o Python área a área.
 
 | Versão | Para quem | Pasta |
 |---|---|---|
